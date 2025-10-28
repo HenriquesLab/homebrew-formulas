@@ -36,16 +36,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-homebrew-
 
-      - name: Tap this repository
-        run: |
-          brew tap henriqueslab/formulas ${{ github.workspace }}
-
       - name: Install formulas
         run: |
           for formula in Formula/*.rb; do
             formula_name=$(basename "$formula" .rb)
             echo "Installing $formula_name..."
-            brew install "henriqueslab/formulas/$formula_name"
+            brew install --build-from-source "$formula"
           done
 
       - name: Test formulas
@@ -92,7 +88,7 @@ jobs:
           for formula in Formula/*.rb; do
             formula_name=$(basename "$formula" .rb)
             echo "Auditing $formula_name..."
-            brew audit --online "henriqueslab/formulas/$formula_name" || true
+            brew audit --online "$formula" || true
           done
 
       - name: Cleanup
