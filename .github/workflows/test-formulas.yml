@@ -1,0 +1,101 @@
+name: Test Formulas
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Formula/**'
+      - '.github/workflows/test-formulas.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Formula/**'
+      - '.github/workflows/test-formulas.yml'
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-14, macos-13]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-${{ hashFiles('Formula/**') }}
+          restore-keys: |
+            ${{ runner.os }}-homebrew-
+
+      - name: Tap this repository
+        run: |
+          brew tap henriqueslab/formulas ${{ github.workspace }}
+
+      - name: Install formulas
+        run: |
+          for formula in Formula/*.rb; do
+            formula_name=$(basename "$formula" .rb)
+            echo "Installing $formula_name..."
+            brew install "henriqueslab/formulas/$formula_name"
+          done
+
+      - name: Test formulas
+        run: |
+          for formula in Formula/*.rb; do
+            formula_name=$(basename "$formula" .rb)
+            echo "Testing $formula_name..."
+
+            # Get the executable names from the formula
+            case "$formula_name" in
+              folder2md4llms)
+                executables="folder2md"
+                ;;
+              taskrepo)
+                executables="taskrepo tsk"
+                ;;
+              *)
+                executables="$formula_name"
+                ;;
+            esac
+
+            # Test each executable
+            for executable in $executables; do
+              # Test version command
+              if ! $executable --version; then
+                echo "Error: $executable --version failed"
+                exit 1
+              fi
+
+              # Test help command
+              if ! $executable --help > /dev/null; then
+                echo "Error: $executable --help failed"
+                exit 1
+              fi
+
+              echo "✓ $executable works"
+            done
+
+            echo "✓ $formula_name tests passed"
+          done
+
+      - name: Audit formulas
+        run: |
+          for formula in Formula/*.rb; do
+            formula_name=$(basename "$formula" .rb)
+            echo "Auditing $formula_name..."
+            brew audit --online "henriqueslab/formulas/$formula_name" || true
+          done
+
+      - name: Cleanup
+        if: always()
+        run: |
+          brew cleanup

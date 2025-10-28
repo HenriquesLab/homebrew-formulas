@@ -1,0 +1,9 @@
+# Ignore all markdown files
+*.md
+
+# Keep important documentation
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!CODE_OF_CONDUCT.md
+!SECURITY.md
