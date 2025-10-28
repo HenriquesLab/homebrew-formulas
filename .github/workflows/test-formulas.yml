@@ -36,15 +36,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-homebrew-
 
+      - name: Setup local tap
+        run: |
+          # Create the tap directory structure and symlink this repo
+          mkdir -p $(brew --repository)/Library/Taps/henriqueslab
+          ln -s ${{ github.workspace }} $(brew --repository)/Library/Taps/henriqueslab/homebrew-formulas
+
       - name: Install formulas
         run: |
-          # Set HOMEBREW_NO_INSTALL_FROM_API to allow local formula installation
-          export HOMEBREW_NO_INSTALL_FROM_API=1
-
           for formula in Formula/*.rb; do
             formula_name=$(basename "$formula" .rb)
             echo "Installing $formula_name..."
-            brew install --formula --build-from-source "$formula"
+            brew install --build-from-source "henriqueslab/formulas/$formula_name"
           done
 
       - name: Test formulas
@@ -91,7 +94,7 @@ jobs:
           for formula in Formula/*.rb; do
             formula_name=$(basename "$formula" .rb)
             echo "Auditing $formula_name..."
-            brew audit --online "$formula" || true
+            brew audit --online "henriqueslab/formulas/$formula_name" || true
           done
 
       - name: Cleanup
