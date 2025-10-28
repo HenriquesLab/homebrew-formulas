@@ -38,10 +38,13 @@ jobs:
 
       - name: Install formulas
         run: |
+          # Set HOMEBREW_NO_INSTALL_FROM_API to allow local formula installation
+          export HOMEBREW_NO_INSTALL_FROM_API=1
+
           for formula in Formula/*.rb; do
             formula_name=$(basename "$formula" .rb)
             echo "Installing $formula_name..."
-            brew install --build-from-source "$formula"
+            brew install --formula --build-from-source "$formula"
           done
 
       - name: Test formulas
