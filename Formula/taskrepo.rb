@@ -10,6 +10,9 @@ class Taskrepo < Formula
   depends_on "git"
   depends_on "gh"
 
+  # Skip cleaning the virtualenv to avoid relocation issues with compiled extensions
+  skip_clean "libexec"
+
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
