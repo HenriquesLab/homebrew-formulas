@@ -6,6 +6,7 @@ class RxivMaker < Formula
   license "MIT"
 
   depends_on "python@3.12"
+  depends_on "texlive"
 
   def install
     venv = libexec/"venv"
@@ -13,15 +14,6 @@ class RxivMaker < Formula
     system venv/"bin/pip", "install", "-v", "--ignore-installed",
            build.head? ? "git+." : "."
     bin.install_symlink venv/"bin/rxiv"
-  end
-
-  def caveats
-    <<~EOS
-      rxiv-maker requires a LaTeX distribution to generate PDFs.
-      Install one of the following:
-        brew install --cask mactex-no-gui
-        brew install basictex
-    EOS
   end
 
   test do
