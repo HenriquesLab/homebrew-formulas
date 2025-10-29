@@ -14,9 +14,9 @@ class Folder2md4llms < Formula
     venv = libexec/"venv"
     system Formula["python@3.12"].opt_bin/"python3.12", "-m", "venv", venv
 
-    # Install without binary wheels to avoid dylib relocation issues
-    # Build from source for better compatibility with Homebrew's relocation
-    system venv/"bin/pip", "install", "-v", "--ignore-installed", "--no-binary", ":all:",
+    # Install the package with all dependencies
+    # Binary wheels are allowed for faster installation
+    system venv/"bin/pip", "install", "-v", "--ignore-installed",
            build.head? ? "git+." : "."
 
     # Create wrapper script only for the folder2md executable
