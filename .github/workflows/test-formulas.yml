@@ -13,11 +13,27 @@ on:
       - '.github/workflows/test-formulas.yml'
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate formula matrix
+        id: set-matrix
+        run: |
+          formulas=$(ls Formula/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]')
+          echo "matrix=$formulas" >> $GITHUB_OUTPUT
+          echo "Testing formulas: $formulas"
+
   test:
-    runs-on: ${{ matrix.os }}
+    needs: prepare
+    runs-on: macos-14
     strategy:
       matrix:
-        os: [macos-14]  # Only test on latest macOS
+        formula: ${{ fromJson(needs.prepare.outputs.matrix) }}
       fail-fast: false
 
     steps:
@@ -32,8 +48,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-homebrew-${{ hashFiles('Formula/**') }}
+          key: ${{ runner.os }}-homebrew-${{ matrix.formula }}-${{ hashFiles(format('Formula/{0}.rb', matrix.formula)) }}
           restore-keys: |
+            ${{ runner.os }}-homebrew-${{ matrix.formula }}-
             ${{ runner.os }}-homebrew-
 
       - name: Setup local tap
@@ -42,74 +59,65 @@ jobs:
           mkdir -p $(brew --repository)/Library/Taps/henriqueslab
           ln -s ${{ github.workspace }} $(brew --repository)/Library/Taps/henriqueslab/homebrew-formulas
 
-      - name: Install formulas
+      - name: Install ${{ matrix.formula }}
         env:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         run: |
-          for formula in Formula/*.rb; do
-            formula_name=$(basename "$formula" .rb)
-            echo "Installing $formula_name..."
-            # Install formula - dylib relocation warnings are expected for Python venvs
-            brew install --build-from-source "henriqueslab/formulas/$formula_name" || {
-              # If installation fails due to linkage errors but formula is installed, continue
-              if brew list "$formula_name" &>/dev/null; then
-                echo "⚠️  Formula installed with linkage warnings (expected for Python venvs)"
-              else
-                echo "❌ Formula installation failed"
-                exit 1
-              fi
-            }
-          done
+          echo "Installing ${{ matrix.formula }}..."
+          # Install formula - dylib relocation warnings are expected for Python venvs
+          brew install --build-from-source "henriqueslab/formulas/${{ matrix.formula }}" || {
+            # If installation fails due to linkage errors but formula is installed, continue
+            if brew list "${{ matrix.formula }}" &>/dev/null; then
+              echo "⚠️  Formula installed with linkage warnings (expected for Python venvs)"
+            else
+              echo "❌ Formula installation failed"
+              exit 1
+            fi
+          }
 
-      - name: Test formulas
+      - name: Test ${{ matrix.formula }}
         run: |
-          for formula in Formula/*.rb; do
-            formula_name=$(basename "$formula" .rb)
-            echo "Testing $formula_name..."
+          echo "Testing ${{ matrix.formula }}..."
 
-            # Get the executable names from the formula
-            case "$formula_name" in
-              folder2md4llms)
-                executables="folder2md"
-                ;;
-              taskrepo)
-                executables="taskrepo tsk"
-                ;;
-              rxiv-maker)
-                executables="rxiv"
-                ;;
-              *)
-                executables="$formula_name"
-                ;;
-            esac
+          # Get the executable names from the formula
+          case "${{ matrix.formula }}" in
+            folder2md4llms)
+              executables="folder2md"
+              ;;
+            taskrepo)
+              executables="taskrepo tsk"
+              ;;
+            rxiv-maker)
+              executables="rxiv"
+              ;;
+            *)
+              executables="${{ matrix.formula }}"
+              ;;
+          esac
 
-            # Test each executable
-            for executable in $executables; do
-              # Test version command
-              if ! $executable --version; then
-                echo "Error: $executable --version failed"
-                exit 1
-              fi
+          # Test each executable
+          for executable in $executables; do
+            # Test version command
+            if ! $executable --version; then
+              echo "Error: $executable --version failed"
+              exit 1
+            fi
 
-              # Test help command
-              if ! $executable --help > /dev/null; then
-                echo "Error: $executable --help failed"
-                exit 1
-              fi
+            # Test help command
+            if ! $executable --help > /dev/null; then
+              echo "Error: $executable --help failed"
+              exit 1
+            fi
 
-              echo "✓ $executable works"
-            done
-
-            echo "✓ $formula_name tests passed"
+            echo "✓ $executable works"
           done
 
-      - name: Audit formulas
+          echo "✓ ${{ matrix.formula }} tests passed"
+
+      - name: Audit ${{ matrix.formula }}
         run: |
-          for formula in Formula/*.rb; do
-            formula_name=$(basename "$formula" .rb)
-            echo "Auditing $formula_name..."
-            brew audit --online "henriqueslab/formulas/$formula_name" || true
-          done
+          echo "Auditing ${{ matrix.formula }}..."
+          brew audit --online "henriqueslab/formulas/${{ matrix.formula }}" || true
 
       - name: Cleanup
         if: always()
