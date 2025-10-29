@@ -1,0 +1,85 @@
+name: Test rxiv-maker
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Formula/rxiv-maker.rb'
+      - '.github/workflows/test-rxiv-maker.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Formula/rxiv-maker.rb'
+      - '.github/workflows/test-rxiv-maker.yml'
+
+jobs:
+  test:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-rxiv-maker-${{ hashFiles('Formula/rxiv-maker.rb') }}
+          restore-keys: |
+            ${{ runner.os }}-homebrew-rxiv-maker-
+            ${{ runner.os }}-homebrew-
+
+      - name: Setup local tap
+        run: |
+          # Create the tap directory structure and symlink this repo
+          mkdir -p $(brew --repository)/Library/Taps/henriqueslab
+          ln -s ${{ github.workspace }} $(brew --repository)/Library/Taps/henriqueslab/homebrew-formulas
+
+      - name: Install rxiv-maker
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: |
+          echo "Installing rxiv-maker..."
+          # Install formula - dylib relocation warnings are expected for Python venvs
+          brew install --build-from-source "henriqueslab/formulas/rxiv-maker" || {
+            # If installation fails due to linkage errors but formula is installed, continue
+            if brew list "rxiv-maker" &>/dev/null; then
+              echo "⚠️  Formula installed with linkage warnings (expected for Python venvs)"
+            else
+              echo "❌ Formula installation failed"
+              exit 1
+            fi
+          }
+
+      - name: Test rxiv-maker
+        run: |
+          echo "Testing rxiv-maker..."
+
+          # Test version command
+          if ! rxiv --version; then
+            echo "Error: rxiv --version failed"
+            exit 1
+          fi
+
+          # Test help command
+          if ! rxiv --help > /dev/null; then
+            echo "Error: rxiv --help failed"
+            exit 1
+          fi
+
+          echo "✓ rxiv works"
+          echo "✓ rxiv-maker tests passed"
+
+      - name: Audit rxiv-maker
+        run: |
+          echo "Auditing rxiv-maker..."
+          brew audit --online "henriqueslab/formulas/rxiv-maker" || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          brew cleanup

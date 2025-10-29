@@ -1,0 +1,85 @@
+name: Test folder2md4llms
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Formula/folder2md4llms.rb'
+      - '.github/workflows/test-folder2md4llms.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Formula/folder2md4llms.rb'
+      - '.github/workflows/test-folder2md4llms.yml'
+
+jobs:
+  test:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-folder2md4llms-${{ hashFiles('Formula/folder2md4llms.rb') }}
+          restore-keys: |
+            ${{ runner.os }}-homebrew-folder2md4llms-
+            ${{ runner.os }}-homebrew-
+
+      - name: Setup local tap
+        run: |
+          # Create the tap directory structure and symlink this repo
+          mkdir -p $(brew --repository)/Library/Taps/henriqueslab
+          ln -s ${{ github.workspace }} $(brew --repository)/Library/Taps/henriqueslab/homebrew-formulas
+
+      - name: Install folder2md4llms
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: |
+          echo "Installing folder2md4llms..."
+          # Install formula - dylib relocation warnings are expected for Python venvs
+          brew install --build-from-source "henriqueslab/formulas/folder2md4llms" || {
+            # If installation fails due to linkage errors but formula is installed, continue
+            if brew list "folder2md4llms" &>/dev/null; then
+              echo "⚠️  Formula installed with linkage warnings (expected for Python venvs)"
+            else
+              echo "❌ Formula installation failed"
+              exit 1
+            fi
+          }
+
+      - name: Test folder2md4llms
+        run: |
+          echo "Testing folder2md4llms..."
+
+          # Test version command
+          if ! folder2md --version; then
+            echo "Error: folder2md --version failed"
+            exit 1
+          fi
+
+          # Test help command
+          if ! folder2md --help > /dev/null; then
+            echo "Error: folder2md --help failed"
+            exit 1
+          fi
+
+          echo "✓ folder2md works"
+          echo "✓ folder2md4llms tests passed"
+
+      - name: Audit folder2md4llms
+        run: |
+          echo "Auditing folder2md4llms..."
+          brew audit --online "henriqueslab/formulas/folder2md4llms" || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          brew cleanup
