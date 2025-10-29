@@ -13,18 +13,14 @@ class Taskrepo < Formula
   # Skip cleaning the virtualenv to avoid relocation issues with compiled extensions
   skip_clean "libexec"
 
-  # No bottles needed - relocation causes issues with Python compiled extensions
-  bottle :unneeded
-
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
     system Formula["python@3.12"].opt_bin/"python3.12", "-m", "venv", venv
 
-    # Activate the venv and install the package with all dependencies
-    # We use the pip from inside our new venv
-    # Allow binary wheels for faster installation
-    system venv/"bin/pip", "install", "-v", "--ignore-installed",
+    # Install without binary wheels to avoid dylib relocation issues
+    # Build from source for better compatibility with Homebrew's relocation
+    system venv/"bin/pip", "install", "-v", "--ignore-installed", "--no-binary", ":all:",
            build.head? ? "git+." : "."
 
     # Create wrapper scripts for both executables
