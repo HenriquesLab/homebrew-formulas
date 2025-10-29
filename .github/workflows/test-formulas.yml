@@ -75,6 +75,9 @@ jobs:
               taskrepo)
                 executables="taskrepo tsk"
                 ;;
+              rxiv-maker)
+                executables="rxiv"
+                ;;
               *)
                 executables="$formula_name"
                 ;;
