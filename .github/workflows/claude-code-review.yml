@@ -10,15 +10,22 @@ on:
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # Filter out bot PRs and optionally limit to specific authors
+    if: |
+      github.actor != 'dependabot[bot]' &&
+      github.actor != 'github-actions[bot]'
+    # Uncomment to limit reviews to external contributors only:
+    # && (github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' ||
+    #     github.event.pull_request.author_association == 'CONTRIBUTOR')
 
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: read
