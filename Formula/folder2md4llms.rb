@@ -12,6 +12,9 @@ class Folder2md4llms < Formula
   # Skip cleaning the virtualenv to avoid relocation issues with compiled extensions
   skip_clean "libexec"
 
+  # No bottles needed - relocation causes issues with Python compiled extensions
+  bottle :unneeded
+
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
