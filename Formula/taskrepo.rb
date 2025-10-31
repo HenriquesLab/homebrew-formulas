@@ -2,8 +2,8 @@
 class Taskrepo < Formula
   desc "TaskWarrior-inspired task management with markdown files in git repositories"
   homepage "https://github.com/HenriquesLab/TaskRepo"
-  url "https://files.pythonhosted.org/packages/25/7e/f9365d3ebd8e535a30444cd7d2456c6cbe21fa6ec83c3a820103d23243d0/taskrepo-0.9.12.tar.gz"
-  sha256 "2116e922e7970ebad6ca3555e0b53b75d8683f88edff31525f7bfbb2a7df9354"
+  url "https://files.pythonhosted.org/packages/84/f2/7b74bb80c70dea4e35504dcb64a36e9903b96afc7134d6dae8ecce418ab8/taskrepo-0.9.13.tar.gz"
+  sha256 "f22850c74aac66d59fc19727eece549aab4aa22c73dd9c3ab6bba7551be0db56"
   license "MIT"
 
   depends_on "python@3.12"
