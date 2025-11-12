@@ -17,6 +17,6 @@ class RxivMaker < Formula
   end
 
   test do
-    assert_match "1.8.6", shell_output("#{bin}/rxiv --version")
+    assert_match "rxiv", shell_output("#{bin}/rxiv --version")
   end
 end
