@@ -7,3 +7,6 @@
 !CHANGELOG.md
 !CODE_OF_CONDUCT.md
 !SECURITY.md
+
+# macOS system files
+.DS_Store
