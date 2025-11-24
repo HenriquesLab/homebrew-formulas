@@ -5,10 +5,10 @@ class RxivMaker < Formula
   sha256 "bbd3e3222b8f674d71551de4e615dc42e18584e3654f91233988de6c9d89a7a4"
   license "MIT"
 
+  depends_on "gh"
+  depends_on "git"
   depends_on "python@3.12"
   depends_on "texlive"
-  depends_on "git"
-  depends_on "gh"
 
   def install
     venv = libexec/"venv"
@@ -19,8 +19,8 @@ class RxivMaker < Formula
   end
 
   test do
-    # Skip test due to sandbox restrictions that cause the command to hang
-    # The binary works correctly outside the sandbox environment
-    # Verified manually: rxiv --version returns "rxiv, version X.Y.Z"
+    # Skip version check due to sandbox restrictions that cause the command to hang
+    # Just verify the binary was installed correctly
+    assert_predicate bin/"rxiv", :exist?, "rxiv binary should exist"
   end
 end
