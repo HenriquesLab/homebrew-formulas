@@ -1,8 +1,8 @@
 class RxivMaker < Formula
   desc "Convert Markdown to professional PDFs with automated figure generation"
   homepage "https://github.com/HenriquesLab/rxiv-maker"
-  url "https://files.pythonhosted.org/packages/2c/b2/5369e3204889b47da67da7c7a32ed9ae192dd29731d903000b78af4c8784/rxiv_maker-1.14.2.tar.gz"
-  sha256 "f77b9912ad0609a2f2ecbc023142d38caa488a9c7cc31e01143dd9d718ed9f84"
+  url "https://files.pythonhosted.org/packages/9c/92/c2f2cf3068a7f622d1c6d6c5a93cc20bf8ad9f491cc86a0b52c50db0c15e/rxiv_maker-1.14.3.tar.gz"
+  sha256 "d150f6ac7aaedffd49bbfe22d59149edb7c07b7067c4c73d8086e4b3a6a2e15f"
   license "MIT"
 
   depends_on "gh"
