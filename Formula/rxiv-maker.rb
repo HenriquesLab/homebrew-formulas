@@ -9,6 +9,7 @@ class RxivMaker < Formula
   depends_on "git"
   depends_on "python@3.12"
   depends_on "texlive"
+  depends_on "latexdiff"
 
   def install
     venv = libexec/"venv"
