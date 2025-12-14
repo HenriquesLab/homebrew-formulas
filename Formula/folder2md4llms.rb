@@ -2,8 +2,8 @@
 class Folder2md4llms < Formula
   desc "Convert folder structures and file contents into markdown for LLMs"
   homepage "https://github.com/henriqueslab/folder2md4llms"
-  url "https://files.pythonhosted.org/packages/54/dc/57fab6e71ca5ba3faa0a5afac9cd97f7a56fbd0e3381353392936fe24927/folder2md4llms-0.5.13.tar.gz"
-  sha256 "096e8ac10886371720cbd592a0a40f19636ff895a8c691239f903d295629a72b"
+  url "https://files.pythonhosted.org/packages/3d/1e/fba9354403e671476911ad408cc8d2a79921321c989021153c4e6d4859cb/folder2md4llms-0.5.14.tar.gz"
+  sha256 "dc2080315a6cc1445c4c4b398b8054367449dbf9b1501513212e71561250784f"
   license "MIT"
 
   depends_on "python@3.12"
