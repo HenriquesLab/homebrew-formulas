@@ -1,0 +1,103 @@
+name: Test taskrepo
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Formula/taskrepo.rb'
+      - '.github/workflows/test-taskrepo.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Formula/taskrepo.rb'
+      - '.github/workflows/test-taskrepo.yml'
+
+jobs:
+  test:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-homebrew-taskrepo-${{ hashFiles('Formula/taskrepo.rb') }}
+          restore-keys: |
+            ${{ runner.os }}-homebrew-taskrepo-
+            ${{ runner.os }}-homebrew-
+
+      - name: Setup local tap
+        run: |
+          # Create the tap directory structure and symlink this repo
+          mkdir -p $(brew --repository)/Library/Taps/henriqueslab
+          ln -s ${{ github.workspace }} $(brew --repository)/Library/Taps/henriqueslab/homebrew-formulas
+
+      - name: Install taskrepo
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+        run: |
+          echo "Installing taskrepo..."
+          # Try installing formula (may have python@3.12 deprecation warnings)
+          brew install --build-from-source "henriqueslab/formulas/taskrepo" 2>&1 | tee install.log || {
+            # Check if it's just the deprecation warning issue
+            if grep -q "missing keywords: :date, :because" install.log; then
+              echo "⚠️  Python deprecation warning detected (known Homebrew issue)"
+              # Try installing with --force-bottle for python
+              brew uninstall --ignore-dependencies taskrepo 2>/dev/null || true
+              HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source "henriqueslab/formulas/taskrepo" || {
+                if brew list "taskrepo" &>/dev/null; then
+                  echo "✓ Formula installed despite warnings"
+                else
+                  echo "❌ Formula installation failed"
+                  exit 1
+                fi
+              }
+            elif brew list "taskrepo" &>/dev/null; then
+              echo "⚠️  Formula installed with warnings (expected for Python venvs)"
+            else
+              echo "❌ Formula installation failed"
+              cat install.log
+              exit 1
+            fi
+          }
+
+      - name: Test taskrepo
+        run: |
+          echo "Testing taskrepo..."
+
+          # Test both executables: taskrepo and tsk
+          for executable in taskrepo tsk; do
+            # Test version command
+            if ! $executable --version; then
+              echo "Error: $executable --version failed"
+              exit 1
+            fi
+
+            # Test help command
+            if ! $executable --help > /dev/null; then
+              echo "Error: $executable --help failed"
+              exit 1
+            fi
+
+            echo "✓ $executable works"
+          done
+
+          echo "✓ taskrepo tests passed"
+
+      - name: Audit taskrepo
+        run: |
+          echo "Auditing taskrepo..."
+          brew audit --online "henriqueslab/formulas/taskrepo" || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          brew cleanup
