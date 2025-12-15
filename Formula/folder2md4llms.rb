@@ -6,13 +6,13 @@ class Folder2md4llms < Formula
   sha256 "5b4ad2f89c821f8d5178645a549517d4a5bcd9510cc17d9e8b937f07a52f6a08"
   license "MIT"
 
-  depends_on "python@3.12"
+  depends_on "python@3.13"
   depends_on "libmagic"
 
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
-    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "venv", venv
+    system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", venv
 
     # Install the package with all dependencies
     # Binary wheels are allowed for faster installation

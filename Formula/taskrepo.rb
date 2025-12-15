@@ -6,14 +6,14 @@ class Taskrepo < Formula
   sha256 "8506d0673698c8c7d45e9dac889b93a1b976953d0b0becedb45abe951f7b29eb"
   license "MIT"
 
-  depends_on "python@3.12"
+  depends_on "python@3.13"
   depends_on "git"
   depends_on "gh"
 
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
-    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "venv", venv
+    system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", venv
 
     # Install the package with all dependencies
     # Binary wheels are allowed for faster installation

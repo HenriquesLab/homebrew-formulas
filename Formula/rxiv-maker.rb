@@ -7,13 +7,13 @@ class RxivMaker < Formula
 
   depends_on "gh"
   depends_on "git"
-  depends_on "python@3.12"
+  depends_on "python@3.13"
   depends_on "texlive"
   depends_on "latexdiff"
 
   def install
     venv = libexec/"venv"
-    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "venv", venv
+    system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", venv
     system venv/"bin/pip", "install", "-v", "--ignore-installed",
            build.head? ? "git+." : "."
     bin.install_symlink venv/"bin/rxiv"

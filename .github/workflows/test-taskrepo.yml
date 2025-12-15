@@ -42,32 +42,9 @@ jobs:
       - name: Install taskrepo
         env:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
         run: |
           echo "Installing taskrepo..."
-          # Try installing formula (may have python@3.12 deprecation warnings)
-          brew install --build-from-source "henriqueslab/formulas/taskrepo" 2>&1 | tee install.log || {
-            # Check if it's just the deprecation warning issue
-            if grep -q "missing keywords: :date, :because" install.log; then
-              echo "⚠️  Python deprecation warning detected (known Homebrew issue)"
-              # Try installing with --force-bottle for python
-              brew uninstall --ignore-dependencies taskrepo 2>/dev/null || true
-              HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source "henriqueslab/formulas/taskrepo" || {
-                if brew list "taskrepo" &>/dev/null; then
-                  echo "✓ Formula installed despite warnings"
-                else
-                  echo "❌ Formula installation failed"
-                  exit 1
-                fi
-              }
-            elif brew list "taskrepo" &>/dev/null; then
-              echo "⚠️  Formula installed with warnings (expected for Python venvs)"
-            else
-              echo "❌ Formula installation failed"
-              cat install.log
-              exit 1
-            fi
-          }
+          brew install --build-from-source "henriqueslab/formulas/taskrepo"
 
       - name: Test taskrepo
         run: |
