@@ -8,15 +8,19 @@ class Folder2md4llms < Formula
 
   depends_on "python@3.13"
   depends_on "libmagic"
+  depends_on "rust" => :build
 
   def install
     # Create a virtual environment inside libexec
     venv = libexec/"venv"
     system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", venv
 
-    # Install the package with all dependencies
-    # Binary wheels are allowed for faster installation
+    # Set linker flags for proper header padding in compiled extensions
+    ENV.prepend "LDFLAGS", "-Wl,-headerpad_max_install_names"
+
+    # Install the package, building rpds-py from source with proper header padding
     system venv/"bin/pip", "install", "-v", "--ignore-installed",
+           "--no-binary", "rpds-py",
            build.head? ? "git+." : "."
 
     # Create wrapper script only for the folder2md executable
