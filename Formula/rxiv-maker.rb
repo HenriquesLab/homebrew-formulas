@@ -7,10 +7,10 @@ class RxivMaker < Formula
 
   depends_on "gh"
   depends_on "git"
+  depends_on "latexdiff"
   depends_on "poppler"
   depends_on "python@3.13"
   depends_on "texlive"
-  depends_on "latexdiff"
 
   def install
     venv = libexec/"venv"
@@ -20,10 +20,26 @@ class RxivMaker < Formula
     bin.install_symlink venv/"bin/rxiv"
   end
 
+  def caveats
+    <<~EOS
+      Rxiv-Maker has been installed!
+
+      Quick Start:
+        rxiv init my-paper          # Create new manuscript
+        rxiv pdf                    # Generate PDF
+        rxiv check-installation     # Verify setup
+
+      Documentation: https://rxiv-maker.henriqueslab.org
+
+      Note: LaTeX distribution (TeX Live) and all dependencies installed automatically.
+    EOS
+  end
+
   test do
-    # Test skipped: rxiv --version hangs in the brew test sandbox due to restrictions
-    # The formula installs correctly and works outside the sandbox
-    # Manual verification: rxiv --version returns "rxiv, version 1.16.0"
-    system "true"
+    # Verify command exists and shows version
+    assert_match version.to_s, shell_output("#{bin}/rxiv --version")
+
+    # Verify help command works
+    assert_match "LaTeX manuscript", shell_output("#{bin}/rxiv --help")
   end
 end

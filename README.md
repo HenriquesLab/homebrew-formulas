@@ -12,6 +12,9 @@ Install formulas directly with a single command:
 # Install TaskRepo
 brew install henriqueslab/formulas/taskrepo
 
+# Install rxiv-maker
+brew install henriqueslab/formulas/rxiv-maker
+
 # Install folder2md4llms
 brew install henriqueslab/formulas/folder2md4llms
 ```
@@ -24,43 +27,76 @@ brew tap henriqueslab/formulas
 
 # Then install formulas
 brew install taskrepo
+brew install rxiv-maker
 brew install folder2md4llms
 ```
 
 ## Available Formulas
 
+### 📄 Rxiv-Maker
+
+Create beautiful LaTeX manuscripts for preprint servers (bioRxiv, arXiv) with automated formatting and validation.
+
+**Installation:**
+```bash
+brew install henriqueslab/formulas/rxiv-maker
+```
+
+**Quick Start:**
+```bash
+rxiv init my-paper          # Create new manuscript
+rxiv pdf                    # Generate PDF
+rxiv check-installation     # Verify setup
+```
+
+**Documentation:** https://rxiv-maker.henriqueslab.org
+**Repository:** https://github.com/HenriquesLab/rxiv-maker
+**License:** MIT
+
+**Key Features:**
+- Automated LaTeX manuscript generation for bioRxiv/arXiv
+- Template-based workflow with validation
+- Track changes support with latexdiff
+- GitHub integration for collaborative writing
+- PDF generation with quality checks
+- Bibliography management
+
+**Dependencies:** Python 3.13, LaTeX (TeX Live), git, gh, poppler, latexdiff (all installed automatically)
+
+---
+
 ### 📄 folder2md4llms
 
 Convert folder structures and file contents into markdown for Large Language Models.
 
-**Version:** 0.5.10
-**Homepage:** https://github.com/henriqueslab/folder2md4llms
-**License:** MIT
-
-**Features:**
-- Smart content condensing for LLMs
-- Document conversion (PDF, DOCX, XLSX, PPTX, etc.)
-- Binary file analysis
-- Parallel processing
-- Advanced filtering with .gitignore-style patterns
-- Interactive file analysis and ignore suggestions
-
-**Usage:**
+**Installation:**
 ```bash
-# Process current directory
-folder2md
-
-# Process specific directory with token limit
-folder2md /path/to/repo --limit 80000t
-
-# Copy output to clipboard
-folder2md /path/to/repo --clipboard
-
-# Generate ignore file
-folder2md --init-ignore
+brew install henriqueslab/formulas/folder2md4llms
 ```
 
-**Dependencies:** Python 3.12, libmagic
+**Quick Start:**
+```bash
+folder2md .                     # Process current directory
+folder2md /path --limit 80000t  # Process with token limit
+folder2md --init-ignore         # Generate ignore file
+```
+
+**Documentation:** https://folder2md4llms.henriqueslab.org
+**Repository:** https://github.com/henriqueslab/folder2md4llms
+**License:** MIT
+
+**Key Features:**
+- Smart content condensing for LLMs with token/character limits
+- Document conversion (PDF, DOCX, XLSX, PPTX, etc.)
+- Binary file analysis
+- Parallel processing for large codebases
+- Advanced filtering with .gitignore-style patterns
+- Interactive file analysis and ignore suggestions
+- YAML configuration support
+
+**Dependencies:** Python 3.13, libmagic (all installed automatically)
+
+**Note:** Package name is `folder2md4llms`, command is `folder2md`.
 
 ---
 
@@ -101,6 +137,7 @@ To update to the latest version of a formula:
 
 ```bash
 brew update
+brew upgrade rxiv-maker
 brew upgrade folder2md4llms
 brew upgrade taskrepo
 ```
@@ -109,6 +146,7 @@ brew upgrade taskrepo
 
 ```bash
 # Uninstall a specific formula
+brew uninstall rxiv-maker
 brew uninstall folder2md4llms
 brew uninstall taskrepo
 
@@ -126,6 +164,7 @@ git clone https://github.com/HenriquesLab/homebrew-formulas.git
 cd homebrew-formulas
 
 # Install formula from local file
+brew install ./Formula/rxiv-maker.rb
 brew install ./Formula/folder2md4llms.rb
 brew install ./Formula/taskrepo.rb
 ```
@@ -140,6 +179,7 @@ To test manually:
 brew install formula-name
 
 # Verify executables
+rxiv --version
 folder2md --version
 taskrepo --version
 tsk --version
@@ -156,5 +196,6 @@ See individual formula files for license information.
 ## Links
 
 - **HenriquesLab:** https://github.com/HenriquesLab
+- **rxiv-maker:** https://github.com/HenriquesLab/rxiv-maker
 - **folder2md4llms:** https://github.com/henriqueslab/folder2md4llms
 - **TaskRepo:** https://github.com/HenriquesLab/TaskRepo

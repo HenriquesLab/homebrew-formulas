@@ -6,9 +6,10 @@ class Folder2md4llms < Formula
   sha256 "cf644faa40b4b1b6c22ee708412698133e5c6d62d4fedd5c2b097a81d89a6168"
   license "MIT"
 
-  depends_on "python@3.13"
   depends_on "libmagic"
-  depends_on "rust" => :build
+  depends_on "python@3.13"
+
+  uses_from_macos "rust" => :build
 
   def install
     # Create a virtual environment inside libexec
@@ -28,7 +29,26 @@ class Folder2md4llms < Formula
     bin.install_symlink venv/"bin/folder2md"
   end
 
+  def caveats
+    <<~EOS
+      folder2md4llms has been installed!
+
+      Quick Start:
+        folder2md .                     # Process current directory
+        folder2md /path --limit 80000t  # Process with token limit
+        folder2md --init-ignore         # Generate ignore file
+
+      Documentation: https://folder2md4llms.henriqueslab.org
+
+      Note: Package name is 'folder2md4llms', but the command is 'folder2md'.
+    EOS
+  end
+
   test do
-    assert_match "folder2md", shell_output("#{bin}/folder2md --version")
+    # Verify command works and shows version
+    assert_match version.to_s, shell_output("#{bin}/folder2md --version")
+
+    # Verify help command works
+    assert_match "Convert folder structures", shell_output("#{bin}/folder2md --help")
   end
 end
