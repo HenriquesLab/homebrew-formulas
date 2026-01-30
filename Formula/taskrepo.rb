@@ -6,9 +6,9 @@ class Taskrepo < Formula
   sha256 "ea1a257df78bfdf3699813cdc73b290f8676949a28f8c23f697e29525472557e"
   license "MIT"
 
-  depends_on "python@3.13"
-  depends_on "git"
   depends_on "gh"
+  depends_on "git"
+  depends_on "python@3.13"
 
   def install
     # Create a virtual environment inside libexec
@@ -26,10 +26,27 @@ class Taskrepo < Formula
     bin.install_symlink venv/"bin/tsk"
   end
 
+  def caveats
+    <<~EOS
+      TaskRepo has been installed!
+
+      Quick Start:
+        tsk init                  # Initialize configuration
+        tsk create-repo work      # Create your first repository
+        tsk add                   # Add a task (interactive)
+
+      Documentation: https://taskrepo.henriqueslab.org
+
+      Note: Both 'tsk' and 'taskrepo' commands are available.
+    EOS
+  end
+
   test do
-    # Skip interactive test - taskrepo requires filesystem access for config
-    # Just verify the binaries exist
-    assert_predicate bin/"taskrepo", :exist?
-    assert_predicate bin/"tsk", :exist?
+    # Verify both commands work and show correct version
+    assert_match version.to_s, shell_output("#{bin}/taskrepo --version")
+    assert_match version.to_s, shell_output("#{bin}/tsk --version")
+
+    # Verify help command works
+    assert_match "TaskWarrior-inspired", shell_output("#{bin}/tsk --help")
   end
 end

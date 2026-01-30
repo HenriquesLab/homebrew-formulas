@@ -4,20 +4,27 @@ A Homebrew tap for custom formulas maintained by [HenriquesLab](https://github.c
 
 ## Installation
 
-### Tap this repository
+### Quick Installation (Recommended)
+
+Install formulas directly with a single command:
 
 ```bash
-brew tap henriqueslab/formulas
+# Install TaskRepo
+brew install henriqueslab/formulas/taskrepo
+
+# Install folder2md4llms
+brew install henriqueslab/formulas/folder2md4llms
 ```
 
-### Install formulas
+### Alternative: Manual Tap
 
 ```bash
-# Install folder2md4llms
-brew install folder2md4llms
+# Tap this repository first
+brew tap henriqueslab/formulas
 
-# Install taskrepo
+# Then install formulas
 brew install taskrepo
+brew install folder2md4llms
 ```
 
 ## Available Formulas
@@ -57,42 +64,36 @@ folder2md --init-ignore
 
 ---
 
-### 📋 taskrepo
+### 📋 TaskRepo
 
 TaskWarrior-inspired task management with markdown files in git repositories.
 
-**Version:** 0.9.4
-**Homepage:** https://github.com/HenriquesLab/TaskRepo
-**License:** MIT
-
-**Features:**
-- Git-backed task storage
-- TaskWarrior-inspired workflow (priorities, tags, dependencies, due dates)
-- Rich YAML frontmatter metadata
-- Interactive TUI with autocomplete
-- Multiple repository support
-- GitHub integration
-- Beautiful terminal output
-
-**Usage:**
+**Installation:**
 ```bash
-# Initialize TaskRepo
-taskrepo init
-
-# Add a new task (short alias: tsk)
-tsk add "Complete project documentation" +docs priority:high
-
-# List tasks
-tsk list
-
-# Mark task as done
-tsk done 1
-
-# View help
-tsk --help
+brew install henriqueslab/formulas/taskrepo
 ```
 
-**Dependencies:** Python 3.12, git, gh
+**Quick Start:**
+```bash
+tsk init                  # Initialize configuration
+tsk create-repo work      # Create your first repository
+tsk add                   # Add a task
+```
+
+**Documentation:** https://taskrepo.henriqueslab.org
+**Repository:** https://github.com/HenriquesLab/TaskRepo
+**License:** MIT
+
+**Key Features:**
+- Git-backed task storage with markdown files
+- TaskWarrior-inspired workflow (priorities, tags, dependencies, due dates)
+- Interactive TUI with autocomplete and color-coded statuses
+- Multiple repository support
+- GitHub integration for task creation from issues
+- Rich YAML frontmatter metadata
+- Beautiful terminal output with modern UI
+
+**Dependencies:** Python 3.13, git, gh (all installed automatically)
 
 ## Updating Formulas
 
