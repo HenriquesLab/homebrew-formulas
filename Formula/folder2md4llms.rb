@@ -8,8 +8,7 @@ class Folder2md4llms < Formula
 
   depends_on "libmagic"
   depends_on "python@3.13"
-
-  uses_from_macos "rust" => :build
+  depends_on "rust" => :build
 
   def install
     # Create a virtual environment inside libexec
@@ -18,6 +17,7 @@ class Folder2md4llms < Formula
 
     # Set linker flags for proper header padding in compiled extensions
     ENV.prepend "LDFLAGS", "-Wl,-headerpad_max_install_names"
+    ENV.prepend "RUSTFLAGS", "-C link-arg=-Wl,-headerpad_max_install_names"
 
     # Install the package, building rpds-py from source with proper header padding
     system venv/"bin/pip", "install", "-v", "--ignore-installed",
