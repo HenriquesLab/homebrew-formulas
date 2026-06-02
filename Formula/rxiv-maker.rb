@@ -40,6 +40,6 @@ class RxivMaker < Formula
     assert_match version.to_s, shell_output("#{bin}/rxiv --version")
 
     # Verify help command works
-    assert_match "LaTeX manuscript", shell_output("#{bin}/rxiv --help")
+    assert_match "publication-ready PDFs", shell_output("#{bin}/rxiv --help")
   end
 end
