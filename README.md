@@ -51,6 +51,7 @@ rxiv check-installation     # Verify setup
 
 **Documentation:** https://rxiv-maker.henriqueslab.org
 **Repository:** https://github.com/HenriquesLab/rxiv-maker
+**Paper:** [*Journal of Cell Science* (2026)](https://doi.org/10.1242/jcs.265183) | [arXiv:2508.00836](https://arxiv.org/abs/2508.00836)
 **License:** MIT
 
 **Key Features:**

@@ -30,6 +30,7 @@ class RxivMaker < Formula
         rxiv check-installation     # Verify setup
 
       Documentation: https://rxiv-maker.henriqueslab.org
+      Paper: https://doi.org/10.1242/jcs.265183
 
       Note: LaTeX distribution (TeX Live) and all dependencies installed automatically.
     EOS
